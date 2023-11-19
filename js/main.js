@@ -9,35 +9,13 @@ document.addEventListener("DOMContentLoaded", function() {
     clearBtn = document.getElementById("clear");
     inputBar = document.getElementById("expressionTxt");
     resultTxt = document.getElementById("result");
-    enterBtn.addEventListener("click", function() {
-        let input = inputBar.value;
-        let result = evaluate(input);
-        console.log(result);
-        resultTxt.innerHTML = `Result: ${result}`;
-    });
-    clearBtn.addEventListener("click", function() {
-        inputBar.value = '';
-        resultTxt.innerHTML = `Result:`;
-    });
+    enterBtn.addEventListener("click", function() {main(1)});
+    clearBtn.addEventListener("click", function() {main(0)});
 })
 
-
-// Get user input and evalate the expression
-const evaluate = (input) => {
-    const expression = input.replaceAll(' ', ''); // Remove all spaces
-    const result = isValid(expression) ? calculate(expression) : "Your input is invalid!"; // Check expression validity
-    // Return result
-    if (!isNaN(result)) {
-        console.log(result);
-    } else {
-        console.log("Your input is invalid!");
-    }
-    return result;
-}
-
 // A series of form validity tests
-const isValid = string => {
-    if (checkSymbols(string) && checkParenthesis(string)) return true;
+const validation = string => {
+    if (checkSymbols(string) && checkParenthesis(string) & string.length > 0) return true;
     return false;
 }
 
@@ -64,21 +42,22 @@ const checkParenthesis = string => {
     return false;
 }
 
-const calculate = expression => {
+// Evaluate the expression
+const calculate = (input) => {
     const opStack = [];
     const numStack = [];
-    let input = expression;
-    while (input) {
-        let char = input.charAt(0), forward = 1, pushTopOp = true, pushChar = true;
+    let expression = input;
+    while (expression) {
+        let char = expression.charAt(0), forward = 1, pushTopOp = true, pushChar = true;
         // Process operations
         if (operations.includes(char)) {
             let topOp = opStack.pop();
             if (!topOp) pushTopOp = false;
             // Recursively calculate sub-expression in the parenthesises
             if (char === '(') {
-                let rightParenIndex = input.indexOf(")");
+                let rightParenIndex = expression.indexOf(")");
                 console.log(rightParenIndex);
-                numStack.push(calculate(input.substring(1, rightParenIndex)));
+                numStack.push(calculate(expression.substring(1, rightParenIndex)));
                 forward += rightParenIndex;
                 pushChar = false;
             } else {
@@ -96,12 +75,12 @@ const calculate = expression => {
         }
         // Process numbers
         if (numbers.includes(char)) {
-            let num = input.match(numPattern)[0];
+            let num = expression.match(numPattern)[0];
             numStack.push(Number(num));
             forward = num.length;
         }
         // Move reading cursor forward
-        input = input.substring(forward);
+        expression = expression.substring(forward);
     }
     // Calculate the result
     while (opStack.length !== 0) {
@@ -109,13 +88,6 @@ const calculate = expression => {
         numStack.push(arithmetic(operation, left, right));
     }
     return numStack.pop();
-}
-
-// Retrive sub-expression
-function getSubExpression(expression) {
-    const leftParenIndex = expression.indexOf("(");
-    const rightParenIndex = expression.indexOf(")");
-    return expression.slice(leftParenIndex + 1, rightParenIndex);
 }
 
 // Basic mathematical functions
@@ -149,4 +121,20 @@ function higherPriority(top, curr) {
         }
     }
     return false;
+}
+
+const main = command => {
+    if (command === 0) {
+        inputBar.value = '';
+        resultTxt.innerHTML = `Result:`;
+    } else if (command === 1) {
+        let input = inputBar.value.replaceAll(" ", ""), result;
+        if (validation(input)) {
+            result = calculate(input);
+        } else {
+            result = "Invalid input";
+        }
+        console.log(result);
+        resultTxt.innerHTML = `Result: ${result}`;
+    }
 }
