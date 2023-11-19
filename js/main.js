@@ -1,21 +1,27 @@
+//TODO: Exponential calculation
+
 const operations = ["+", "-", "*", "/", "(", ")", ".", "^"];
 const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const symbols = operations.concat(numbers);
 const numPattern = /\d+\.?\d*/;
-let enterBtn, clearBtn, inputBar, resultTxt;
-
+let symbolBtns, acBtn, delBtn, equalBtn, numBox, input = "";
 document.addEventListener("DOMContentLoaded", function() {
-    enterBtn = document.getElementById("enter");
-    clearBtn = document.getElementById("clear");
-    inputBar = document.getElementById("expressionTxt");
-    resultTxt = document.getElementById("result");
-    enterBtn.addEventListener("click", function() {main(1)});
-    clearBtn.addEventListener("click", function() {main(0)});
-})
+    symbolBtns = document.getElementsByClassName("symbol");
+    acBtn = document.getElementById("all-clear");
+    delBtn = document.getElementById("delete");
+    equalBtn = document.getElementById("equal");
+    numBox = document.getElementById("number-box");
+    for (let i = 0; i < symbolBtns.length; i++) {
+        symbolBtns[i].addEventListener("click", function(e) {main(2, e)});
+    }
+    acBtn.addEventListener("click", function(e) {main(0, e)});
+    delBtn.addEventListener("click", function(e) {main(3, e)});
+    equalBtn.addEventListener("click", function(e) {main(1, e)});
+});
 
 // A series of form validity tests
 const validation = string => {
-    if (checkSymbols(string) && checkParenthesis(string) & string.length > 0) return true;
+    if (checkSymbols(string) && checkParenthesis(string) && string.length > 0) return true;
     return false;
 }
 
@@ -43,10 +49,10 @@ const checkParenthesis = string => {
 }
 
 // Evaluate the expression
-const calculate = (input) => {
+const calculate = (string) => {
     const opStack = [];
     const numStack = [];
-    let expression = input;
+    let expression = string;
     while (expression) {
         let char = expression.charAt(0), forward = 1, pushTopOp = true, pushChar = true;
         // Process operations
@@ -123,18 +129,22 @@ function higherPriority(top, curr) {
     return false;
 }
 
-const main = command => {
+const main = (command, e) => {
     if (command === 0) {
-        inputBar.value = '';
-        resultTxt.innerHTML = `Result:`;
+        numBox.innerHTML = "";
     } else if (command === 1) {
-        let input = inputBar.value.replaceAll(" ", ""), result;
+        let input = numBox.innerHTML.replaceAll(" ", ""), result;
         if (validation(input)) {
             result = calculate(input);
         } else {
             result = "Invalid input";
         }
+        if (result) numBox.innerHTML = result;
+        else numBox.innerHTML = "Undefined";
         console.log(result);
-        resultTxt.innerHTML = `Result: ${result}`;
+    } else if (command === 2) {
+        numBox.innerHTML += e.target.innerHTML;
+    } else if (command === 3) {
+        if (numBox.innerHTML.length) numBox.innerHTML = numBox.innerHTML.slice(0, -1);
     }
 }
