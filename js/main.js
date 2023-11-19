@@ -19,9 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
         inputBar.value = '';
         resultTxt.innerHTML = `Result:`;
     });
-    console.log(enterBtn);
-    console.log(inputBar);
-    console.log(resultTxt);
 })
 
 
@@ -105,7 +102,6 @@ const calculate = expression => {
         }
         // Move reading cursor forward
         input = input.substring(forward);
-        console.log(input);
     }
     // Calculate the result
     while (opStack.length !== 0) {
