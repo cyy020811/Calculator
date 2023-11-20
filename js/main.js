@@ -69,7 +69,7 @@ const calculate = (string) => {
             } else {
                 // Calculate * and / before pushing + and -
                 if (topOp) {
-                    if (higherPriority(topOp, char)) {
+                    if (topOp === "^" || higherPriority(topOp, char)) {
                         let right = numStack.pop(), left = numStack.pop();
                         numStack.push(arithmetic(char, left, right));
                         pushTopOp = false;
@@ -111,6 +111,9 @@ function arithmetic(operand, leftNum, rightNum) {
             break;
         case "/":
             result = leftNum / rightNum;
+            break;
+        case "^":
+            result = Math.pow(leftNum, rightNum);
             break;
         default:
             result = NaN;
